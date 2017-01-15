@@ -1,5 +1,5 @@
 /api/
-/build/
+/build/*
 !/build/index.html
 /source/script/
 /test/script/
