@@ -1,0 +1,190 @@
+{
+  "name"    : "lib",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json",
+      "block" :
+      [
+        "build",
+        "build-script",
+        "build-resources",
+        "source",
+        "source-script",
+        "test"
+      ]
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "api-data",
+    "build",
+    "clean",
+    "distclean",
+    "dependencies",
+    "fix",
+    "info",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "source-hybrid",
+    "source-server",
+    "source-server-reload",
+    "source-httpd-config",
+    "test",
+    "test-source",
+    "translation",
+    "validate-config",
+    "validate-manifest",
+    "watch"
+  ],
+
+  "default-job" : "build",
+
+  "let" :
+  {
+    "APPLICATION"  : "lib",
+    "QOOXDOO_PATH" : "../../qooxdoo.git",
+    "QXTHEME"      : "lib.theme.Theme",
+    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/qx${QOOXDOO_VERSION}/cache",
+    "SFILES_VERSION_PART" : "",
+    "TEST_NAMESPACE"      : "test",
+    "ROOT"         : "."
+  },
+
+  "config-warnings" :
+  {
+    "job-shadowing" :
+    [
+      "api",
+      "apiconf::build-data",
+      "clean",
+      "distclean"
+    ]
+  },
+
+  // You only need to edit the remainder of this file, if you want to customize
+  // specific jobs, or add own job definitions.
+
+  "jobs" :
+  {
+    "project-common" :
+    {
+      "config-warnings" :
+      {
+        "exclude" : ["qx.event.GlobalError"]
+      },
+
+      "lint-check" :
+      {
+        "allowed-globals" : [ "qx.event.GlobalError" ]
+      },
+
+      "library" :
+      [
+        {
+          "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
+          "uri" : ".."
+        },
+        {
+          "manifest" : "${ROOT}/Manifest.json"
+        }
+      ],
+
+      "extend" : [ "cache" ],
+
+      "include" :
+      [
+        "lib.ApiClass"
+        /*
+        "qx.Class"
+        ,"qx.Mixin"
+        ,"qx.Interface"
+        ,"qx.data.marshal.Json"
+        ,"qx.bom.client.Runtime"
+        */
+      ],
+
+      "exclude" :
+      [
+        "qx.event.GlobalError"
+      ],
+
+      "environment" :
+      {
+        "qx.debug" : false,
+        "qx.debug.dispose" : false,
+        "qx.debug.databinding" : false,
+        "qx.aspects" : false,
+        "qx.globalErrorHandling" : false
+      },
+
+      "compile-options" :
+      {
+        "paths" :
+        {
+          "loader-template" : "${QOOXDOO_PATH}/tool/data/generator/oo.loader.tmpl.js"
+        },
+        "uris" :
+        {
+          "script"   : ".",
+          "resource" : "."
+        }
+      }
+    },
+
+
+    "build-min" :
+    {
+      "desc" : "a minified, deployable version of the library",
+      "extend" : [ "project-common" ],
+
+      "compile-options" :
+      {
+        "paths" :
+        {
+          "file" : "${BUILD_PATH}/lib.min.js",
+          "app-root" : "."
+        },
+        "code" :
+        {
+          "format"   : true,
+          "except"   : [],
+          "optimize" : [ "variables", "basecalls", "privates", "strings", "variants", "whitespace" ]
+        }
+      },
+      "compile" : { "type" : "build" }
+    },
+
+
+    "build" :
+    {
+      "desc" : "a non-optimized, deployable version of the library",
+      "extend" : [ "project-common" ],
+
+      "compile-options" :
+      {
+        "paths" :
+        {
+          "file" : "${BUILD_PATH}/lib.js",
+          "app-root" : "."
+        },
+        "code" :
+        {
+          "format"   : true,
+          "except"   : [],
+          "optimize" : [ ]
+        }
+      },
+      "compile" : { "type" : "build" }
+    }
+  }
+}
